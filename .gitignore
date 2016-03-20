@@ -1,0 +1,9 @@
+apache-storm-0.10.0/
+afinn/
+storm-project/target/
+storm-project/.idea/
+
+# Package Files #
+*.jar
+*.war
+*.ear

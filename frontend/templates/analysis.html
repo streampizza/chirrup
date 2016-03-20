@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Testing the api</title>
+  </head>
+  <body>
+    <script type=text/javascript>
+    var source = new EventSource('/stream')
+    source.addEventListener('message', function(e) {
+      console.log("received message")
+      console.log(JSON.parse(e.data))
+      document.body.innerHTML += e.data
+    });
+    source.addEventListener('error', function(e) {
+      console.log(e);
+    });
+    </script>
+    <h1>Chirrup Messages</h1>
+    <hr>
+    <br>
+  </body>
+</html>

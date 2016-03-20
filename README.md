@@ -46,7 +46,7 @@ $ {$STORM_HOME}/bin/storm jar ${CHIRRUP_HOME}/target/storm-*-SNAPSHOT-jar-with-d
 ```
 * Run the web application:
 ```sh
-$ python $CHIRRUP_HOME/frontend/app.py
+$ python {$CHIRRUP_HOME}/frontend/app.py
 ```
 
-Access the applcation at http://127.0.0.1:5000
+Access the applcation at http://127.0.0.1:5000/analysis

@@ -13,6 +13,7 @@ import twitter4j.*;
 
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public class WrangleBolt extends BaseRichBolt {
 
     private String filterOutURLFromTweet(final Status status) {
         final String tweet = status.getText();
+
+
         final URLEntity[] urlEntities = status.getURLEntities();
         int startOfURL;
         int endOfURL;
@@ -52,9 +55,11 @@ public class WrangleBolt extends BaseRichBolt {
         tweetId = tweet.getId();
         tweetText = filterOutURLFromTweet(tweet);
         Place tweetPlace = tweet.getPlace();
+        String originalTweetText = tweet.getText();
+        Long tweetDate = tweet.getCreatedAt().getTime();
         User user = tweet.getUser();
         if (tweetPlace == null) {
-            tweetCountry = "NA";
+            tweetCountry = "Not Available";
         }
         else tweetCountry = tweetPlace.getCountry();
         //tweetCountry="my country";
@@ -69,12 +74,12 @@ public class WrangleBolt extends BaseRichBolt {
                 hashtags.add(hashtagEntity.getText());
             }
 
-            Values values = new Values(tweetId, tweetText, tweetCountry, hashtags);
+            Values values = new Values(tweetId, tweetDate, tweetText, tweetCountry, hashtags, originalTweetText);
             collector.emit(values);
         }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("tweet-id","tweet-text","tweet-country","hashtags"));
+        declarer.declare(new Fields("tweet-id", "tweet-date", "tweet-text","tweet-country","hashtags", "original-tweet-text"));
     }
 }

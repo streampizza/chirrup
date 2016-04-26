@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package org.rtsa.storm;
 
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -41,30 +42,17 @@ import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 
 @SuppressWarnings("serial")
-public class TwitterSpout extends BaseRichSpout {
+public class TestGeoLocation {
 
     SpoutOutputCollector _collector;
     LinkedBlockingQueue<Status> queue = null;
     TwitterStream _twitterStream;
-    String consumerKey;
-    String consumerSecret;
-    String accessToken;
-    String accessTokenSecret;
+    String custKey = "D90JVJkIzMYBSU4K1zCvP2FXE";
+    String custSecret = "r1GWAmHsTtwuFzQFOdGj0Ad7jBq2CynlwRyNiIEvbQpfzOOsTG";
+    String accessKey = "612666274-cQQ4ICpXco0pSQU3Zl7IprEuF9jhgaSE2gXhQzkc";
+    String accessSecret = "wFytlnD0xolGvOrqGGCm80ZiKcnsNsj3XwnbEbtO1ukz4";
     String[] keyWords;
-
-    public TwitterSpout(String consumerKey, String consumerSecret,
-                              String accessToken, String accessTokenSecret, String[] keyWords) {
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        this.accessToken = accessToken;
-        this.accessTokenSecret = accessTokenSecret;
-        this.keyWords = keyWords;
-    }
-
-    public TwitterSpout() {
-        // TODO Auto-generated constructor stub
-    }
-
+    Logger log = LoggerFactory.getLogger(TestGeoLocation.class);
 
     public void open(Map conf, TopologyContext context,
                      SpoutOutputCollector collector) {
@@ -77,8 +65,8 @@ public class TwitterSpout extends BaseRichSpout {
             public void onStatus(Status status) {
 
                 if( status.getText().length() != 0 && status.getLang().equals("en")) {
-                        queue.offer(status);
-
+                    queue.offer(status);
+                    log.info("Getting Lattitude: "+(status.getGeoLocation().getLatitude()));
                 }
             }
 
@@ -111,8 +99,8 @@ public class TwitterSpout extends BaseRichSpout {
                 .getInstance();
 
         twitterStream.addListener(listener);
-        twitterStream.setOAuthConsumer(consumerKey, consumerSecret);
-        AccessToken token = new AccessToken(accessToken, accessTokenSecret);
+        twitterStream.setOAuthConsumer(custKey, custSecret);
+        AccessToken token = new AccessToken(accessKey, accessSecret);
         twitterStream.setOAuthAccessToken(token);
 
         if (keyWords.length == 0) {
@@ -128,7 +116,6 @@ public class TwitterSpout extends BaseRichSpout {
 
     }
 
-
     public void nextTuple() {
         Status ret = queue.poll();
         if (ret == null) {
@@ -139,24 +126,23 @@ public class TwitterSpout extends BaseRichSpout {
         }
     }
 
-    @Override
     public void close() {
         _twitterStream.shutdown();
     }
 
-    @Override
+
     public Map<String, Object> getComponentConfiguration() {
         Config ret = new Config();
         ret.setMaxTaskParallelism(1);
         return ret;
     }
 
-    @Override
+
     public void ack(Object id) {
 
     }
 
-    @Override
+
     public void fail(Object id) {
 
     }

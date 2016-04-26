@@ -1,0 +1,45 @@
+2.1 Apache Storm:
+Apache Storm is the backbone of analytics in our project. In this section, we introduce the basic terminology, and the reason for choosing the tool over its alternatives.
+2.1.1 Overview
+Apache Storm is an open source distributed real time stream processing computation system. Storm makes it easy to reliably process unbounded streams of data and offers various methods of dealing with architectural faults. The tool integrates easily with existing systems and is a great choice for implementing new stream processing systems.
+
+2.1.2 Terminology
+2.1.2.1 Topology
+A topology contains the logic for the real time application. It consists of interconnected bolts and spouts that exchange data using tuples.
+
+2.1.2.2 Spout
+A spout is a source of stream. A spout will read data from an external source such as a Message stream or a streaming API and forward the data in the form of tuples to the adjecent bolt.
+
+2.1.2.3 Bolt
+A bolt is a computational unit of a topology. All the transformations on data are done inside a bolt. The number of bolts in the cluster also denotes the level of granularity of computation involved in the process.
+
+2.1.3 Reason
+There were several alternatives to Apache Storm that offered near about the same level of reliability. Some of these tools include: Apache Spark, Apache Flink and Apache Samza. During the incubation of this project, Apache Flink was still under nightly development and we needed something more robust and stable to power our data. Apache Samza did not offer a very good integration with the Web API. In fact, it totally depended on Apache Kafka project for Data input and Apache Hadoop as a data store. Though map reduce techniques would provide a fast. The toughest competitor was Apache Spark. Spark is being as actively developed as Storm. It provided the same level of robustness and performance as Apache Storm. It also had well developed Machine Learning libraries which are not present in the distribution of Apache Storm. The reason that Apache Spark was beaten in this battle was at the level of modularity Storm offered. Also, running map reduce jobs on continuous stream inputs would be computationally very costly. Hence, we chose Apache Storm as it finally met all the requirements we had thought of during the planning phase of the project.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+2.2 Apache Kafka
+Apache Kafka is a fast, scalable, distributed and durable message communication system. Kafka takes care of storing messages and making them available in the correct order. The developers of the project call it a "distributed commit log".
+2.2.1 Overview
+Apache Kafka is the message broker in our application stack. It sends forms a link between the Apache Storm Output stream and the MongoDB.The Storm topology produces a message for every output and Kafka then conveys these messages to be written to the MongoDB collection.
+2.2.2 Terminology
+2.2.2.1 Broker
+A broker is a Message passer that is responsible for accepting messages from a producer and send it to a consumer.
+2.2.2.2 Producer
+An entity that sends messages to Kafka broker is called a producer.
+2.2.2.3 Consumer
+A consumer is an entity that receives messages from a Kafka broker and performs processing on them.
+2.2.3 Reason
+There are several message brokers available which are open source and actively developed. Some of them include ActiveMQ, RabbitMQ and Kestrel. RabbitMQ and Kestrel do not offer the level of fault tolerance as ActiveMQ and Kafka do. So, it was down to the two players ActiveMQ and Apache Kafka. ActiveMQ has been a big player in the industry for several years. It provides high replication, and continuous producer connectivity. However, ActiveMQ did not have the feature for consumer tracking and uses files to maintain state information about consumers and messages. Kafka does a wonderful job on all places ActiveMQ cannot and even more. Kafka being a robust system by itself, maintains state information in another industry standard key-value store called Zookeeper. Zookeeper is a distributed cluster management system that offers reliable KV stores and worker statistics. Kafka also enables consumer tracking so that if consumers go down and come up later, they can start resuming from the point where they left off. No messages would be lost in the restart process. So, without doubt Kafka truly offers a non-blocking message queue system. It is obvious that Twitter is going to produce higher volume of data for a unit time than the writes to MongoDB. Hence, choice of a non blocking queue was must for this application.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+2.5 Frontend Frameworks
+2.5.1 Bootstrap
+Bootstrap is a mobile-first frontend framework that offers responsive web design elements as a package of divs. Bootstrap has become an industry standard for all web applications that aim to support multiple screen sizes and devices. Also,Bootstrap has customizable code and huge number of inbuilt elements that takes the developer pain away from the designer. We used bootstrap for the same reasons. We had to power visualization elements and make them visible beautifully on any screen size and machine.
+2.5.2 Fusion Charts
+A startup founded in Bangalore that provides a huge charting library with over 500 easy to customize charts. We use Fusion Chart's gauge meter to display the world's average sentiment on the particular hashtag.
+2.5.3 Google Charts
+The world map that displays the sentiment of every country is generated using the Charts library provided by Google. Its fast to load, easy to use and beautiful in its aesthetics. We are using the chart called GeoChart. The reason that we chose Google Charts to power our Map is because it supported the simple JSON array of [Country,Sentiment] sub array as input and detected points to draw and maintain color shades on the map chart.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -17,7 +17,7 @@ public class SentBoltPython extends ShellBolt implements IRichBolt {
         super("python",resourceFile);
     }
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("tweet-id","sentiment","country","hashtags"));
+        declarer.declare(new Fields("tweet-id", "tweet-date", "sentiment","country","hashtags","tweet-text"));
     }
 
     @Override

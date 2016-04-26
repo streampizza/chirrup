@@ -1,21 +1,183 @@
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>Testing the api</title>
-  </head>
-  <body>
-    <script type=text/javascript>
-    var source = new EventSource('/stream')
-    source.addEventListener('message', function(e) {
-      console.log("received message")
-      console.log(JSON.parse(e.data))
-      document.body.innerHTML += e.data
-    });
-    source.addEventListener('error', function(e) {
-      console.log(e);
-    });
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Chirrup - #{{hashtag}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/css/jumbotron.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/js/fusioncharts.js"></script>
+    <script type="text/javascript" src="/static/js/fusioncharts.theme.carbon.js"></script>
+    <script type="text/javascript" src="/static/js/gchartloader.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <!-- gauge code start-->
+    <script type="text/javascript">
+        FusionCharts.ready(function () {
+            var w = eval({{average_sentiment | safe}})
+            var csatGauge = new FusionCharts({
+                "type": "angulargauge",
+                "renderAt": "chart_div",
+                "width": "100%",
+                "height": "300",
+                "bgColor": "FFFFFF",
+                "bgAlpha":"0",
+                "dataFormat": "json",
+                "dataSource":{
+                       "chart": {
+                          "caption": "Average Sentiment",
+                          "bgColor": "000000",
+                          "decimals":"1",
+                          "bgAlpha": "10",
+                          "lowerLimit": "-10",
+                          "upperLimit": "10",
+                          "theme": "carbon",
+                          "chartBottomMargin": 50,
+                          "showValue":1,
+                          "showBorder": "1",
+                          "borderColor": "#666666",
+                          "borderThickness": "4",
+                          "borderAlpha": "80"
+
+                       },
+                       "colorRange": {
+                          "color": [
+                             {
+                                "minValue": "-10",
+                                "maxValue": "-5",
+                                "code": "#e44a00"
+                             },
+                             {
+                                "minValue": "-5",
+                                "maxValue": "5",
+                                "code": "#f8bd19"
+                             },
+                             {
+                                "minValue": "5",
+                                "maxValue": "10",
+                                "code": "#6baa01"
+                             }
+                          ]
+                       },
+                       "dials": {
+                          "dial": [
+                             {
+                                "value": w.avgsentiment,
+                                "showValue": "1",
+                                "tooltext": "Average Sentiment"
+                             }
+                          ]
+                       }
+                    }
+              });
+            csatGauge.render();
+        });
+        </script>
+    <!-- gauge code end-->
+    <!-- map code start -->
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['geochart']});
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var datum = eval({{country_wise_sentiment|safe}})
+        var arr = [['Country','Sentiment']]
+        for(var i=0; i<datum.length; i++)
+        {
+          country = datum[i]._id
+          sentiment = datum[i].avgsentiment
+          var cont = [country, sentiment]
+          arr.push(cont)
+        }
+        console.log(arr)
+        var data = google.visualization.arrayToDataTable(arr);
+
+        var options = {};
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
     </script>
-    <h1>Chirrup Messages</h1>
-    <hr>
-    <br>
+    <!-- map code end -->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Chirrup</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" action="/" method="post">
+            <div class="form-group">
+              <input type="text" class="form-control" name="query">
+            </div>
+            <button type="submit" class="btn btn-success">Search</button>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <div class="jumbotron">
+      <div class="container">
+        <h1>{{hashtag}}</h1>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-12">
+
+          <div id="chart_div"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Country Wise Sentiment</h2>
+          <div id="regions_div"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Last Ten tweets</h2>
+          <div class="row">
+          {% for x in last_ten_tweets %}
+          <div class="col-md-4" style="background:rgba(211,211,211,0.5)">
+             {{x.tweetText}} <br>
+             <b>Sentiment:</b> {{x.sentiment}} <br>
+           </div>
+          {% endfor %}
+        </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; 2015 Chirrup</p>
+      </footer>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>

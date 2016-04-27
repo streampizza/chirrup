@@ -53,6 +53,7 @@ public class OutputBolt extends BaseRichBolt implements IRichBolt {
         collection.insertOne(doc);
         String ret = "{ "+
                 "\"tweet-id\": " + tweetId.toString() + ", " +
+                "\"tweetText\": " + tweetText +" , " +
                 "\"sentiment\": " + Double.toString(sentiment)+", "+
                 "\"country\": " + "\""+ country + "\""+ ", " +
                 "\"hashtags\": " + hashtags.toString() +

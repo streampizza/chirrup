@@ -26,9 +26,14 @@ public class OutputBolt extends BaseRichBolt implements IRichBolt {
     OutputCollector collector;
     Producer producer = null;
     Logger logger = LoggerFactory.getLogger(OutputBolt.class);
-
+    MongoClient mongoClient;
+    MongoDatabase database;
+    MongoCollection<Document> collection;
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
+        mongoClient = new MongoClient("localhost");
+        database = mongoClient.getDatabase("chirrup");
+        collection = database.getCollection("tweets");
 
     }
 
@@ -41,9 +46,6 @@ public class OutputBolt extends BaseRichBolt implements IRichBolt {
         String country = (String) input.getValueByField("country");
         ArrayList<String> hashtags = (ArrayList<String>) input.getValueByField("hashtags");
 
-        MongoClient mongoClient = new MongoClient("localhost");
-        MongoDatabase database = mongoClient.getDatabase("chirrup");
-        MongoCollection<Document> collection = database.getCollection("tweets");
         Document doc = new Document("tweetid",tweetId.toString())
                 .append("timestamp", tweetDate)
                 .append("sentiment", sentiment)
